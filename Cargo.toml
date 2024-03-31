@@ -2,7 +2,13 @@
 name = "wedding"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+askama = "0.12.1"
+salvo = "0.66.2"
+tokio = { version = "1.37.0", features = ["macros"] }
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
