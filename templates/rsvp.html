@@ -4,4 +4,19 @@
 
 {% block content %}
     <h1>Will you be there?</h1>
+    {% if needs_password %}
+        <p>Enter the password to RSVP:</p>
+        <form>
+            <div>
+                <label for="code">Password:</label>
+                <input type="password" name="code" required>
+                {% if wrong_password %}
+                    <span>Invalid password</span>
+                {% endif %}
+            </div>
+        </form>
+    {% else %}
+        TODO: RSVP form
+    {% endif %}
+
 {% endblock %}
