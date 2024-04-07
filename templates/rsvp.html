@@ -9,9 +9,9 @@
         <form>
             <div>
                 <label for="code">Password:</label>
-                <input type="password" name="code" required>
+                <input type="password" name="code" required{% if wrong_password %} aria-invalid="true" aria-describedby="password-error"{% endif %}>
                 {% if wrong_password %}
-                    <span>Invalid password</span>
+                    <span id="password-error">Invalid password</span>
                 {% endif %}
             </div>
         </form>
