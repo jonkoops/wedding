@@ -4,9 +4,10 @@ on:
   pull_request:
 env:
   CARGO_TERM_COLOR: always
+  RUSTFLAGS: -Dwarnings
 jobs:
-  build_and_test:
-    name: Build and test
+  main:
+    name: Build, test and lint
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -20,3 +21,6 @@ jobs:
 
       - name: Run tests
         run: cargo test --verbose
+
+      - name: Run linter
+        run: cargo clippy --all-targets --all-features
