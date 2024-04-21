@@ -12,7 +12,7 @@ async fn main() {
     let session_store = MemoryStore::default();
     let session_layer = SessionManagerLayer::new(session_store)
         .with_secure(false)
-        .with_expiry(Expiry::OnInactivity(Duration::seconds(10)));
+        .with_expiry(Expiry::OnInactivity(Duration::minutes(10)));
     let app = Router::new()
         .route("/", get(index))
         .route("/rsvp", get(rsvp))
@@ -41,15 +41,15 @@ async fn rsvp(session: Session, query_params: Query<RsvpQueryParams>) -> RsvpTem
         .unwrap_or_default();
 
     if !rsvp_status.needs_password {
-        RsvpTemplate::default();
+        return RsvpTemplate::default();
     }
 
     match query_params.0.code {
         Some(code) if code != RSVP_PASSWORD => {
-            return RsvpTemplate {
+            RsvpTemplate {
                 needs_password: true,
                 wrong_password: true,
-            };
+            }
         }
         Some(code) if code == RSVP_PASSWORD => {
             session
@@ -62,13 +62,13 @@ async fn rsvp(session: Session, query_params: Query<RsvpQueryParams>) -> RsvpTem
                 .await
                 .unwrap();
 
-            return RsvpTemplate {
+            RsvpTemplate {
                 needs_password: false,
                 ..Default::default()
-            };
+            }
         }
         _ => {
-            return RsvpTemplate {
+            RsvpTemplate {
                 needs_password: true,
                 ..Default::default()
             }
