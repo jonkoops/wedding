@@ -45,12 +45,10 @@ async fn rsvp(session: Session, query_params: Query<RsvpQueryParams>) -> RsvpTem
     }
 
     match query_params.0.code {
-        Some(code) if code != RSVP_PASSWORD => {
-            RsvpTemplate {
-                needs_password: true,
-                wrong_password: true,
-            }
-        }
+        Some(code) if code != RSVP_PASSWORD => RsvpTemplate {
+            needs_password: true,
+            wrong_password: true,
+        },
         Some(code) if code == RSVP_PASSWORD => {
             session
                 .insert(
@@ -67,12 +65,10 @@ async fn rsvp(session: Session, query_params: Query<RsvpQueryParams>) -> RsvpTem
                 ..Default::default()
             }
         }
-        _ => {
-            RsvpTemplate {
-                needs_password: true,
-                ..Default::default()
-            }
-        }
+        _ => RsvpTemplate {
+            needs_password: true,
+            ..Default::default()
+        },
     }
 }
 
