@@ -10,7 +10,7 @@ publish = false
 askama = "0.12.1"
 askama_axum = "0.4.0"
 axum = "0.7.5"
-serde = "1.0.198"
+serde = "1.0.199"
 time = "0.3.36"
 tokio = { version = "1.37.0", features = ["rt-multi-thread"] }
 tower-sessions = "0.12.2"
