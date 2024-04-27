@@ -3,20 +3,50 @@
 {% block title %}RSVP{% endblock %}
 
 {% block content %}
-    <h1>Will you be there?</h1>
-    {% if needs_password %}
-        <p>Enter the password to RSVP:</p>
-        <form>
-            <div>
-                <label for="code">Password:</label>
-                <input type="password" name="code" required{% if wrong_password %} aria-invalid="true" aria-describedby="password-error"{% endif %}>
-                {% if wrong_password %}
-                    <span id="password-error">Invalid password</span>
-                {% endif %}
-            </div>
-        </form>
-    {% else %}
-        TODO: RSVP form
-    {% endif %}
+  <h1>Will you be there?</h1>
+  {% if needs_password %}
+    <p>Enter the password to RSVP:</p>
+    <form>
+      <div>
+        <label for="code">Password:</label>
+        <input type="password" name="code" required{% if wrong_password %} aria-invalid="true" aria-errormessage="password-error"{% endif %}>
+        {% if wrong_password %}
+          <span id="password-error" role="alert">Invalid password, please provide the correct password.</span>
+        {% endif %}
+      </div>
+    </form>
+  {% else %}
+    <form method="post" x-data="{ numGuests: 1 }">
+      <section>
+        <h2>Contact information</h2>
+        <p>We'll use this information to keep you up-to-date on the wedding.</p>
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" name="email" autocomplete="email" required>
+        </div>
+      </section>
+      <section>
+        <h2>Guests</h2>
+        <p>Add all the attending guests here, yourself included.</p>
+        <ul>
+          <template x-for="(_, index) in numGuests">
+            <li>
+              <div>
+                <label :for="`guests[${index}][firstName]`">First name:</label>
+                <input type="text" :name="`guests[${index}][firstName]`" autocomplete="given-name" required>
+              </div>
+              <div>
+                <label :for="`guests[${index}][lastName]`">Last name:</label>
+                <input type="text" :name="`guests[${index}][lastName]`" autocomplete="family-name" required>
+              </div>
+              <button type="button" @click="numGuests--" :disabled="numGuests === 1">Remove guest</button>
+            </li>
+          </template>
+        </ul>
+        <button type="button" @click="numGuests++">Add a guest</button>
+      </section>
+      <button type="submit">Submit</button>
+    </form>
+  {% endif %}
 
 {% endblock %}

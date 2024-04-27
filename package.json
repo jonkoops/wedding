@@ -1,0 +1,6 @@
+{
+  "packageManager": "pnpm@9.0.6",
+  "dependencies": {
+    "alpinejs": "^3.13.10"
+  }
+}

@@ -3,6 +3,7 @@ use axum::{extract::Query, routing::get, Router};
 use serde::{Deserialize, Serialize};
 use time::Duration;
 use tokio::net::TcpListener;
+use tower_http::services::ServeFile;
 use tower_sessions::{Expiry, MemoryStore, Session, SessionManagerLayer};
 
 #[tokio::main]
@@ -16,6 +17,10 @@ async fn main() {
     let app = Router::new()
         .route("/", get(index))
         .route("/rsvp", get(rsvp))
+        .route_service(
+            "/vendor/alpinejs.js",
+            ServeFile::new("node_modules/alpinejs/dist/module.esm.js"),
+        )
         .layer(session_layer);
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
