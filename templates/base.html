@@ -7,6 +7,14 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="none">
+    <script type="importmap">
+      {
+        "imports": {
+          "alpinejs": "/vendor/alpinejs.js"
+        }
+      }
+    </script>
+    <link rel="modulepreload" href="/vendor/alpinejs.js">
   </head>
   <body>
     <header>
@@ -20,5 +28,9 @@
     <main>
       {% block content %}{% endblock %}
     </main>
+    <script type="module">
+      import Alpine from 'alpinejs';
+      Alpine.start();
+    </script>
   </body>
 </html>
