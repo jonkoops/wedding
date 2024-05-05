@@ -1,10 +1,10 @@
-use askama_axum::Template;
-use axum::{extract::Query, routing::get, Router};
-use serde::{Deserialize, Serialize};
+mod routes;
+
+use axum::{routing::get, Router};
 use time::Duration;
 use tokio::net::TcpListener;
 use tower_http::services::ServeFile;
-use tower_sessions::{Expiry, MemoryStore, Session, SessionManagerLayer};
+use tower_sessions::{Expiry, MemoryStore, SessionManagerLayer};
 
 #[tokio::main]
 async fn main() {
@@ -15,8 +15,8 @@ async fn main() {
         .with_secure(false)
         .with_expiry(Expiry::OnInactivity(Duration::minutes(10)));
     let app = Router::new()
-        .route("/", get(index))
-        .route("/rsvp", get(rsvp))
+        .route("/", get(routes::index::route_handler))
+        .route("/rsvp", get(routes::rsvp::route_handler))
         .route_service(
             "/vendor/alpinejs.js",
             ServeFile::new("node_modules/alpinejs/dist/module.esm.js"),
@@ -25,79 +25,4 @@ async fn main() {
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
     axum::serve(listener, app).await.unwrap();
-}
-
-async fn index() -> IndexTemplate {
-    IndexTemplate {}
-}
-
-#[derive(Template)]
-#[template(path = "index.html")]
-struct IndexTemplate {}
-
-const RSVP_STATUS_KEY: &str = "rsvp";
-const RSVP_PASSWORD: &str = "azula";
-
-async fn rsvp(session: Session, query_params: Query<RsvpQueryParams>) -> RsvpTemplate {
-    let rsvp_status: RsvpStatus = session
-        .get(RSVP_STATUS_KEY)
-        .await
-        .unwrap()
-        .unwrap_or_default();
-
-    if !rsvp_status.needs_password {
-        return RsvpTemplate::default();
-    }
-
-    match query_params.0.code {
-        Some(code) if code != RSVP_PASSWORD => RsvpTemplate {
-            needs_password: true,
-            wrong_password: true,
-        },
-        Some(code) if code == RSVP_PASSWORD => {
-            session
-                .insert(
-                    RSVP_STATUS_KEY,
-                    RsvpStatus {
-                        needs_password: false,
-                    },
-                )
-                .await
-                .unwrap();
-
-            RsvpTemplate {
-                needs_password: false,
-                ..Default::default()
-            }
-        }
-        _ => RsvpTemplate {
-            needs_password: true,
-            ..Default::default()
-        },
-    }
-}
-
-#[derive(Deserialize)]
-struct RsvpQueryParams {
-    code: Option<String>,
-}
-
-#[derive(Deserialize, Serialize)]
-struct RsvpStatus {
-    needs_password: bool,
-}
-
-impl Default for RsvpStatus {
-    fn default() -> Self {
-        Self {
-            needs_password: true,
-        }
-    }
-}
-
-#[derive(Default, Template)]
-#[template(path = "rsvp.html")]
-struct RsvpTemplate {
-    needs_password: bool,
-    wrong_password: bool,
 }
