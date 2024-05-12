@@ -54,7 +54,7 @@ pub async fn route_handler(
 
     let invitation = db::get_invitation_by_code(&db.pool, &code).await;
 
-    if invitation.is_some() {
+    if let Ok(Some(_)) = invitation {
         session
             .insert(RSVP_STATUS_KEY, RsvpStatus { needs_code: false })
             .await
