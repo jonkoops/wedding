@@ -1,10 +1,11 @@
 use askama_axum::Template;
-use axum::extract::Query;
+use axum::extract::{Query, State};
 use serde::{Deserialize, Serialize};
 use tower_sessions::Session;
 
+use crate::{app::DbState, db};
+
 const RSVP_STATUS_KEY: &str = "rsvp";
-const RSVP_PASSWORD: &str = "azula";
 
 #[derive(Deserialize)]
 pub struct RsvpQueryParams {
@@ -13,59 +14,60 @@ pub struct RsvpQueryParams {
 
 #[derive(Deserialize, Serialize)]
 struct RsvpStatus {
-    needs_password: bool,
+    needs_code: bool,
 }
 
 impl Default for RsvpStatus {
     fn default() -> Self {
-        Self {
-            needs_password: true,
-        }
+        Self { needs_code: true }
     }
 }
 
 #[derive(Default, Template)]
 #[template(path = "rsvp.html")]
 pub struct RsvpTemplate {
-    needs_password: bool,
-    wrong_password: bool,
+    needs_code: bool,
+    wrong_code: bool,
 }
 
-pub async fn route_handler(session: Session, query_params: Query<RsvpQueryParams>) -> RsvpTemplate {
+pub async fn route_handler(
+    State(db): State<DbState>,
+    session: Session,
+    query_params: Query<RsvpQueryParams>,
+) -> RsvpTemplate {
     let rsvp_status: RsvpStatus = session
         .get(RSVP_STATUS_KEY)
         .await
         .unwrap()
         .unwrap_or_default();
 
-    if !rsvp_status.needs_password {
+    if !rsvp_status.needs_code {
         return RsvpTemplate::default();
     }
 
-    match query_params.0.code {
-        Some(code) if code != RSVP_PASSWORD => RsvpTemplate {
-            needs_password: true,
-            wrong_password: true,
-        },
-        Some(code) if code == RSVP_PASSWORD => {
-            session
-                .insert(
-                    RSVP_STATUS_KEY,
-                    RsvpStatus {
-                        needs_password: false,
-                    },
-                )
-                .await
-                .unwrap();
+    let Some(code) = query_params.0.code else {
+        return RsvpTemplate {
+            needs_code: true,
+            wrong_code: false,
+        };
+    };
 
-            RsvpTemplate {
-                needs_password: false,
-                ..Default::default()
-            }
-        }
-        _ => RsvpTemplate {
-            needs_password: true,
-            ..Default::default()
-        },
+    let invitation = db::get_invitation_by_code(&db.pool, &code).await;
+
+    if invitation.is_some() {
+        session
+            .insert(RSVP_STATUS_KEY, RsvpStatus { needs_code: false })
+            .await
+            .unwrap();
+
+        return RsvpTemplate {
+            needs_code: false,
+            wrong_code: false,
+        };
+    }
+
+    RsvpTemplate {
+        needs_code: true,
+        wrong_code: true,
     }
 }

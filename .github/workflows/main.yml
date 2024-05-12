@@ -16,6 +16,13 @@ jobs:
       - name: Set up Rust
         run: rustup update stable
 
+      - name: Check SQL queries
+        run: |
+          cargo install sqlx-cli --no-default-features --features sqlite
+          sqlx database create
+          sqlx migrate run
+          cargo sqlx prepare --check
+
       - name: Build project
         run: cargo build --verbose
 
