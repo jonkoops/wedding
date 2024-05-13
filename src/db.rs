@@ -46,7 +46,10 @@ pub async fn create_and_connect() -> SqlitePool {
     pool
 }
 
-pub async fn get_invitation_by_code(pool: &SqlitePool, code: &str) -> Option<Invitation> {
+pub async fn get_invitation_by_code(
+    pool: &SqlitePool,
+    code: &str,
+) -> Result<Option<Invitation>, sqlx::Error> {
     sqlx::query_as!(
         Invitation,
         r#"SELECT id, status, code, email FROM invitations WHERE code = ?"#,
@@ -54,5 +57,4 @@ pub async fn get_invitation_by_code(pool: &SqlitePool, code: &str) -> Option<Inv
     )
     .fetch_optional(pool)
     .await
-    .unwrap()
 }
