@@ -13,6 +13,7 @@ pub enum InvitationStatus {
     Pending,
     Accepted,
     Rejected,
+    Unknown,
 }
 
 impl From<String> for InvitationStatus {
@@ -21,7 +22,7 @@ impl From<String> for InvitationStatus {
             "Pending" => InvitationStatus::Pending,
             "Accepted" => InvitationStatus::Accepted,
             "Rejected" => InvitationStatus::Rejected,
-            _ => panic!("Invalid invitation status"),
+            _ => InvitationStatus::Unknown,
         }
     }
 }
