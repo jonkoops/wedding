@@ -1,4 +1,7 @@
-use axum::{routing::get, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 use time::Duration;
 use tower_http::services::ServeFile;
 use tower_sessions::{Expiry, MemoryStore, SessionManagerLayer};
@@ -19,6 +22,7 @@ pub async fn create_router(pool: sqlx::Pool<sqlx::Sqlite>) -> Router {
     Router::new()
         .route("/", get(routes::index::route_handler))
         .route("/rsvp", get(routes::rsvp::route_handler))
+        .route("/rsvp", post(routes::rsvp_confirm::route_handler))
         .route_service(
             "/vendor/alpinejs.js",
             ServeFile::new("node_modules/alpinejs/dist/module.esm.js"),

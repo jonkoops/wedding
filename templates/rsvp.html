@@ -16,37 +16,51 @@
       </div>
     </form>
   {% else %}
-    <form method="post" x-data="{ numGuests: 1 }">
+    <form x-data="{ attending: true, numGuests: 1 }" method="post">
       <section>
-        <h2>Contact information</h2>
-        <p>We'll use this information to keep you up-to-date on the wedding.</p>
+        <h2>Attendance</h2>
+        <p>Let us know if you'll be able to make it.</p>
         <div>
-          <label for="email">Email</label>
-          <input type="email" name="email" autocomplete="email" required>
+          <label for="attending">Will you be attending?</label>
+          <select x-model.boolean="attending" name="attending">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
         </div>
       </section>
-      <section>
-        <h2>Guests</h2>
-        <p>Add all the attending guests here, yourself included.</p>
-        <ul>
-          <template x-for="(_, index) in numGuests">
-            <li>
-              <div>
-                <label :for="`guests[${index}][firstName]`">First name</label>
-                <input type="text" :name="`guests[${index}][firstName]`" autocomplete="given-name" required>
-              </div>
-              <div>
-                <label :for="`guests[${index}][lastName]`">Last name</label>
-                <input type="text" :name="`guests[${index}][lastName]`" autocomplete="family-name" required>
-              </div>
-              <button type="button" @click="numGuests--" :disabled="numGuests === 1">Remove guest</button>
-            </li>
-          </template>
-        </ul>
-        <button type="button" @click="numGuests++">Add a guest</button>
-      </section>
+      <template x-if="attending">
+        <section>
+          <h2>Contact information</h2>
+          <p>We'll use this information to keep you up-to-date on the wedding.</p>
+          <div>
+            <label for="email">Email</label>
+            <input type="email" name="email" autocomplete="email" required>
+          </div>
+        </section>
+      </template>
+      <template x-if="attending">
+        <section>
+          <h2>Guests</h2>
+          <p>Add all the attending guests here, yourself included.</p>
+          <ul>
+            <template x-for="(_, index) in numGuests">
+              <li>
+                <div>
+                  <label :for="`guests[${index}][first_name]`">First name</label>
+                  <input type="text" :name="`guests[${index}][first_name]`" autocomplete="given-name" required>
+                </div>
+                <div>
+                  <label :for="`guests[${index}][last_name]`">Last name</label>
+                  <input type="text" :name="`guests[${index}][last_name]`" autocomplete="family-name" required>
+                </div>
+                <button type="button" @click="numGuests--" :disabled="numGuests === 1">Remove guest</button>
+              </li>
+            </template>
+          </ul>
+          <button type="button" @click="numGuests++">Add a guest</button>
+        </section>
+      </template>
       <button type="submit">Submit</button>
     </form>
   {% endif %}
-
 {% endblock %}
