@@ -10,7 +10,7 @@ importers:
     dependencies:
       alpinejs:
         specifier: ^3.13.10
-        version: 3.14.0
+        version: 3.14.1
 
 packages:
 
@@ -20,8 +20,8 @@ packages:
   '@vue/shared@3.1.5':
     resolution: {integrity: sha512-oJ4F3TnvpXaQwZJNF3ZK+kLPHKarDmJjJ6jyzVNDKH9md1dptjC7lWR//jrGuLdek/U6iltWxqAnYOu8gCiOvA==}
 
-  alpinejs@3.14.0:
-    resolution: {integrity: sha512-YCWF95PMJqePe9ll6KMyDt/nLhh2R7RhqBf4loEmLzIskcHque4Br/9UgAa6cw13H0Cm3FM9e1hzDwP5z5wlDA==}
+  alpinejs@3.14.1:
+    resolution: {integrity: sha512-ICar8UsnRZAYvv/fCNfNeKMXNoXGUfwHrjx7LqXd08zIP95G2d9bAOuaL97re+1mgt/HojqHsfdOLo/A5LuWgQ==}
 
 snapshots:
 
@@ -31,6 +31,6 @@ snapshots:
 
   '@vue/shared@3.1.5': {}
 
-  alpinejs@3.14.0:
+  alpinejs@3.14.1:
     dependencies:
       '@vue/reactivity': 3.1.5
